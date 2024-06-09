@@ -66,6 +66,7 @@ typedef struct Conversion {
   SignedCharPtr colors; /* Array to fill colors in */
   Int16Ptr cursors;    /* Array to fill current cursor positions in */
   Int64Ptr timestamps; /* Array to fill timestamp values in */
+  int64_t step_counter;
   UnsignedCharPtr inputs; /* Array to fill inputs values in */
   Int32Ptr scores; /* Array to fill in-game score values in */
 

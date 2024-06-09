@@ -198,6 +198,7 @@ Conversion *conversion_create(size_t rows, size_t cols, size_t term_rows,
   c->colors = (SignedCharPtr){0};
   c->cursors = (Int16Ptr){0};
   c->timestamps = (Int64Ptr){0};
+  c->step_counter = 0;
   c->inputs = (UnsignedCharPtr){0};
   c->scores = (Int32Ptr){0};
   c->remaining = 0;
@@ -329,7 +330,7 @@ void write_to_buffers(Conversion *conv) {
   *conv->cursors.cur++ = cur->c;
 
   int64_t usec = 1000000 * (int64_t)conv->header.tv.tv_sec;
-  *conv->timestamps.cur++ = usec + (int64_t)conv->header.tv.tv_usec;
+  *conv->timestamps.cur++ = conv->step_counter++;
 
   --conv->remaining;
 

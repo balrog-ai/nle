@@ -145,6 +145,13 @@ class Converter
         return conversion_->remaining;
     }
 
+    void reset_timestamps() {
+        if (conversion_ && conversion_->timestamps.cur) {
+            *conversion_->timestamps.cur = 0;
+            conversion_->step_counter = 0;
+        }
+    }
+
     bool
     is_loaded()
     {
@@ -199,6 +206,7 @@ PYBIND11_MODULE(_pyconverter, m)
              py::arg("colors"), py::arg("cursors"), py::arg("timestamps"),
              py::arg("inputs"), py::arg("scores"))
         .def("is_loaded", &Converter::is_loaded)
+        .def("reset_timestamps", &Converter::reset_timestamps)
         .def_readonly("rows", &Converter::rows_)
         .def_readonly("cols", &Converter::cols_)
         .def_readonly("term_rows", &Converter::term_rows_)

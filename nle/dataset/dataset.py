@@ -61,6 +61,7 @@ def convert_frames(
         if load_fn(converter):
             if converter.part == 0:
                 resets[0] = 1
+                converter.reset_timestamps()
         else:
             chars.fill(0)
             colors.fill(0)
