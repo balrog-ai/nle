@@ -101,10 +101,6 @@ checked_conversion(py::handle h, const std::vector<ssize_t> &shape)
 class Nethack
 {
   public:
-    int save() {
-        return nle_save(nle_);
-    }
-
     Nethack(std::string dlpath, std::string ttyrec, std::string hackdir,
             std::string nethackoptions, bool spawn_monsters,
             std::string scoreprefix)
@@ -205,6 +201,42 @@ class Nethack
         ttyrec_ = f;
     }
 
+    int save() 
+    {
+        int success;
+        success = nle_save(nle_);        
+        return success;
+    }
+
+    void
+    set_use_seed_init(bool use_seed_init) 
+    {
+        use_seed_init_ = use_seed_init;
+    }
+
+    void 
+    end()
+    {
+        // We use this function for loading the game from save
+        // 1. end()
+        // 2. we copy save to hackdir in `Nethack`
+        // 3. start()
+        if (nle_) {
+            nle_end(nle_);
+            nle_ = nullptr;
+        }
+    }
+
+    void
+    start() 
+    {
+        py::gil_scoped_release gil;
+
+        nle_ = 
+            nle_start(dlpath_.c_str(), &obs_, ttyrec_,
+                          use_seed_init_ ? &seed_init_ : nullptr, &settings_);
+    }
+
     void
     set_buffers(py::object glyphs, py::object chars, py::object colors,
                 py::object specials, py::object blstats, py::object message,
@@ -282,7 +314,7 @@ class Nethack
         seed_init_.seeds[0] = core;
         seed_init_.seeds[1] = disp;
         seed_init_.reseed = reseed;
-        use_seed_init = true;
+        use_seed_init_ = true;
 #else
         throw std::runtime_error("Seeding not enabled");
 #endif
@@ -351,11 +383,11 @@ class Nethack
         if (!nle_) {
             nle_ =
                 nle_start(dlpath_.c_str(), &obs_, ttyrec ? ttyrec : ttyrec_,
-                          use_seed_init ? &seed_init_ : nullptr, &settings_);
+                          use_seed_init_ ? &seed_init_ : nullptr, &settings_);
         } else
             nle_reset(nle_, &obs_, ttyrec,
-                      use_seed_init ? &seed_init_ : nullptr, &settings_);
-        use_seed_init = false;
+                      use_seed_init_ ? &seed_init_ : nullptr, &settings_);
+        use_seed_init_ = false;
 
         if (obs_.done)
             throw std::runtime_error("NetHack done right after reset");
@@ -365,7 +397,7 @@ class Nethack
     nle_obs obs_;
     std::vector<py::object> py_buffers_;
     nle_seeds_init_t seed_init_;
-    bool use_seed_init = false;
+    bool use_seed_init_ = false;
     nledl_ctx *nle_ = nullptr;
     std::FILE *ttyrec_ = nullptr;
     nle_settings settings_;
@@ -409,6 +441,9 @@ PYBIND11_MODULE(_pynethack, m)
         .def("in_normal_game", &Nethack::in_normal_game)
         .def("how_done", &Nethack::how_done)
         .def("save", &Nethack::save)
+        .def("start", &Nethack::start)
+        .def("end", &Nethack::end)
+        .def("set_use_seed_init", &Nethack::set_use_seed_init, py::arg("use_seed_init"))
         .def("set_wizkit", &Nethack::set_wizkit);
 
     py::module mn = m.def_submodule(

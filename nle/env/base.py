@@ -193,8 +193,6 @@ class NLE(gym.Env):
         allow_all_yn_questions=False,
         allow_all_modes=False,
         spawn_monsters=True,
-        gamesavedir=None,
-        gameloaddir=None,
     ):
         """Constructs a new NLE environment.
 
@@ -310,8 +308,6 @@ class NLE(gym.Env):
             wizard=wizard,
             spawn_monsters=spawn_monsters,
             scoreprefix=scoreprefix,
-            gamesavedir=gamesavedir,
-            gameloaddir=gameloaddir,
         )
         self._close_nethack = weakref.finalize(self, self.nethack.close)
 
@@ -521,8 +517,25 @@ class NLE(gym.Env):
 
         return super().render(mode=mode)
 
-    def save(self, gamesavedir=None):
-        return self.nethack.save(gamesavedir=gamesavedir)
+    def save(self, gamesavedir):
+        # save calls function `dosave0` (responsible for saving the game) and copies save to `gamesavedir`
+        # we have to call this function explicitly because action combination ord(S) + ord(y) are overriden 
+        self.nethack.save(gamesavedir)
+
+        # we use reset to turn on the game, since saving turns it off
+        # TODO: can we dump save files without turning off the game??? 
+        self.last_observation = self.nethack.reset(self.ttyrec)
+        
+        # get out of the menu after we load new game
+        # TODO: we have one more problem, after resetting the game we have left all open menus (like inventory) 
+        # additionally we see new message "Welcome back to NetHack"
+        self.nethack.step(ASCII_ESC)       
+
+    def load(self, gameloaddir):
+        self.last_observation = self.nethack.load(gameloaddir)
+
+        # get out of the menu after we load new game
+        self.nethack.step(ASCII_ESC)
 
     def __repr__(self):
         return "<%s>" % self.__class__.__name__

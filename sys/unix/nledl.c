@@ -156,8 +156,7 @@ int
 nle_save(nledl_ctx *nledl)
 {   
     int success;
-    void *(*dosave0)();
-
+    int *(*dosave0)();
     dosave0 = dlsym(nledl->dlhandle, "dosave0");
     success = dosave0();
 
