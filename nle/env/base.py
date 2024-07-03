@@ -293,18 +293,18 @@ class NLE(gym.Env):
             self._ttyrec_pattern = os.path.join(
                 self.savedir, ttyrec_prefix + ttyrec_version
             )
-            ttyrec = self._ttyrec_pattern % 0
+            self.ttyrec = self._ttyrec_pattern % 0
             # Create an xlogfile with the same format of name.
-            scoreprefix = ttyrec.replace("0" + ttyrec_version, "")
+            scoreprefix = self.ttyrec.replace("0" + ttyrec_version, "")
         else:
-            ttyrec = None
+            self.ttyrec = None
             scoreprefix = None
 
         self.nethack = nethack.Nethack(
             observation_keys=self._observation_keys,
             options=options,
             playername="Agent-" + self.character,
-            ttyrec=ttyrec,
+            ttyrec=self.ttyrec,
             wizard=wizard,
             spawn_monsters=spawn_monsters,
             scoreprefix=scoreprefix,
