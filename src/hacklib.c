@@ -907,10 +907,12 @@ void
 reseed_random(fn)
 int FDECL((*fn), (int));
 {
+#if NLE_FIX_LEVEL == 0
    /* only reseed if we are certain that the seed generation is unguessable
     * by the players. */
     if (has_strong_rngseed)
         init_random(fn);
+#endif
 }
 
 time_t

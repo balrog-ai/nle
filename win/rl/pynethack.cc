@@ -351,8 +351,9 @@ class Nethack
         } else
             nle_reset(nle_, &obs_, ttyrec,
                       use_seed_init ? &seed_init_ : nullptr, &settings_);
+#if NLE_FIX_LEVEL == 0
         use_seed_init = false;
-
+#endif
         if (obs_.done)
             throw std::runtime_error("NetHack done right after reset");
     }
@@ -450,6 +451,12 @@ PYBIND11_MODULE(_pynethack, m)
 
     mn.attr("NLE_ALLOW_SEEDING") =
 #ifdef NLE_ALLOW_SEEDING
+        true;
+#else
+        false;
+#endif
+    mn.attr("NLE_FIX_LEVEL") = 
+#if NLE_FIX_LEVEL == 1
         true;
 #else
         false;

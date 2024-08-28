@@ -993,6 +993,9 @@ mklev()
     struct mkroom *croom;
     int ridx;
 
+    init_random(rn2);
+    init_random(rn2_on_display_rng);
+
     reseed_random(rn2);
     reseed_random(rn2_on_display_rng);
 
@@ -1030,6 +1033,9 @@ mklev()
        now so that they never do and no one will be tempted to introduce
        a new use of them for anything on this level */
     dnstairs_room = upstairs_room = sstairs_room = (struct mkroom *) 0;
+
+    init_random(rn2);
+    init_random(rn2_on_display_rng);
 
     reseed_random(rn2);
     reseed_random(rn2_on_display_rng);

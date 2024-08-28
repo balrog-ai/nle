@@ -438,9 +438,10 @@ nle_start(nle_obs *obs, FILE *ttyrec, nle_seeds_init_t *seed_init,
     nle->generatorcontext = t.ctx;
     nle->done = (t.data == NULL);
     obs->done = nle->done;
+#if NLE_FIX_LEVEL == 0
     nle_seeds_init =
         NULL; /* Don't set to *these* seeds on subsequent reseeds, if any. */
-
+#endif
     if (nle->ttyrec) {
         if (obs->blstats) {
             /* See comment in `nle_step`. We record the score in line with
