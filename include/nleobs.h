@@ -42,6 +42,7 @@
 #define NLE_BL_CONDITION 25 /* condition bit mask */
 #define NLE_BL_ALIGN 26
 
+#define NLE_ALLOW_SEEDING 1
 /* #define NLE_ALLOW_SEEDING 1 */ /* Set in CMakeLists.txt if not disabled. */
 /* #define NLE_USE_TILES 1 */     /* Set in CMakeLists.txt. */
 
