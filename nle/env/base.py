@@ -403,6 +403,9 @@ class NLE(gym.Env):
             self._quit_game(observation, done)
             done = True
 
+        if self.render_mode is not None:
+            self.render()
+
         return (
             self._get_observation(observation),
             reward,
@@ -456,6 +459,9 @@ class NLE(gym.Env):
                 stacklevel=2,
             )
             return self.reset(seed=seed, options=options)
+
+        if self.render_mode is not None:
+            self.render()
 
         return self._get_observation(self.last_observation), self._get_information(
             self._get_end_status(self.last_observation, done)
