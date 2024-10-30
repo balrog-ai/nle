@@ -27,6 +27,9 @@
 
 extern "C" {
 #include "hack.h"
+#include "permonst.h"
+#include "pm.h" // File generated during NetHack compilation.
+#include "rm.h"
 }
 
 namespace py = pybind11;

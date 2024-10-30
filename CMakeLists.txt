@@ -167,6 +167,10 @@ add_dependencies(_pynethack util) # For pm.h.
 pybind11_add_module(
   nle_language_obsv
   win/rl/language_wrapper/main.cpp 
+  src/monst.c
+  src/decl.c
+  src/drawing.c
+  src/objects.c
 )
 target_link_libraries(nle_language_obsv PUBLIC nethackdl)
 set_target_properties(nle_language_obsv PROPERTIES CXX_STANDARD 14)
