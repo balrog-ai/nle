@@ -3,7 +3,7 @@ from gym import spaces
 from nle.env import NLE
 from nle.nethack import actions as nethack_actions
 
-from language_wrapper.nle_language_obsv import NLELanguageObsv
+from nle import nle_language_obsv
 
 
 class NLELanguageWrapper(Wrapper):
@@ -241,7 +241,7 @@ class NLELanguageWrapper(Wrapper):
         ), f"NLE environment missing required obsv key(s): {missing_obsv_keys}"
         # assert observations are included
         self.use_language_action = use_language_action
-        self.nle_language = NLELanguageObsv()
+        self.nle_language = nle_language_obsv.NLELanguageObsv()
 
         # Build map for action string to NLE Action Enum
         self.action_str_enum_map = {}

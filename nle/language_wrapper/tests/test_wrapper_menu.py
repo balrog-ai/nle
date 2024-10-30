@@ -1,5 +1,5 @@
-from language_wrapper import NLELanguageWrapper
-from language_wrapper.tests.test_utils import strs_to_2d
+from nle.language_wrapper import NLELanguageWrapper
+from nle.language_wrapper.tests.test_utils import strs_to_2d
 
 
 def test_message_spell_menu(fake_nle_env):

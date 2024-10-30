@@ -5,8 +5,8 @@ from gym import spaces
 from nle.env import NLE
 from nle.nethack import actions as nethack_actions
 
-from language_wrapper.tests.test_utils import str_to_1d
-from language_wrapper.tests.test_utils import strs_to_2d
+from nle.language_wrapper.tests.test_utils import str_to_1d
+from nle.language_wrapper.tests.test_utils import strs_to_2d
 
 
 @pytest.fixture

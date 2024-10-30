@@ -6,7 +6,7 @@ import torch
 from sample_factory.envs.env_registry import global_env_registry
 from transformers import RobertaTokenizerFast
 
-from language_wrapper import NLELanguageWrapper
+from nle.language_wrapper import NLELanguageWrapper
 
 
 class SampleFactoryNLELanguageEnv(gym.Env):

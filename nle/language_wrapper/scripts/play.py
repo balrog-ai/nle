@@ -3,7 +3,7 @@ import minihack  # pylint: disable=unused-import
 import nle  # pylint: disable=unused-import
 from minihack.scripts.env_list import skip_envs_list
 
-from language_wrapper import NLELanguageWrapper
+from nle.language_wrapper import NLELanguageWrapper
 
 
 def main(nethack_env_name):

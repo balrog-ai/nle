@@ -5,9 +5,9 @@ from sample_factory.algorithms.utils.arguments import parse_args
 from sample_factory.run_algorithm import run_algorithm
 
 # Needs to be imported to register models and envs
-import language_wrapper.agents.sample_factory.env  # pylint: disable=['unused-import']
-import language_wrapper.agents.sample_factory.language_encoder  # pylint: disable=['unused-import']
-from language_wrapper.agents.sample_factory.common import custom_parse_args
+import nle.language_wrapper.agents.sample_factory.env  # pylint: disable=['unused-import']
+import nle.language_wrapper.agents.sample_factory.language_encoder  # pylint: disable=['unused-import']
+from nle.language_wrapper.agents.sample_factory.common import custom_parse_args
 
 
 def parse_all_args(argv=None, evaluation=False):

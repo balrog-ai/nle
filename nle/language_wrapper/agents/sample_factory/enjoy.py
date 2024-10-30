@@ -2,9 +2,9 @@ import sys
 
 from sample_factory.algorithms.appo.enjoy_appo import enjoy
 
-import language_wrapper.agents.sample_factory.env  # pylint: disable=['unused-import']
-import language_wrapper.agents.sample_factory.language_encoder  # pylint: disable=['unused-import']
-from language_wrapper.agents.sample_factory.common import custom_parse_args
+import nle.language_wrapper.agents.sample_factory.env  # pylint: disable=['unused-import']
+import nle.language_wrapper.agents.sample_factory.language_encoder  # pylint: disable=['unused-import']
+from nle.language_wrapper.agents.sample_factory.common import custom_parse_args
 
 
 def main():

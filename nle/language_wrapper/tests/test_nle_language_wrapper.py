@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 from nle.nethack import actions as nethack_actions
 
-from language_wrapper import NLELanguageWrapper
-from language_wrapper.scripts import play
+from nle.language_wrapper import NLELanguageWrapper
+from nle.language_wrapper.scripts import play
 
 
 def test_create_env_real(real_nethack_env):
