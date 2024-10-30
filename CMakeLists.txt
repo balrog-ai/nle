@@ -164,6 +164,15 @@ set_target_properties(_pynethack PROPERTIES CXX_STANDARD 14)
 target_include_directories(_pynethack PUBLIC ${NLE_INC_GEN})
 add_dependencies(_pynethack util) # For pm.h.
 
+pybind11_add_module(
+  nle_language_obsv
+  win/rl/language_wrapper/main.cpp 
+)
+target_link_libraries(nle_language_obsv PUBLIC nethackdl)
+set_target_properties(nle_language_obsv PROPERTIES CXX_STANDARD 14)
+target_include_directories(nle_language_obsv PUBLIC ${NLE_INC_GEN})
+add_dependencies(nle_language_obsv util) # For pm.h.
+
 # ttyrec converter library
 add_library(
   converter STATIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/converter/converter.c
