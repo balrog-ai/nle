@@ -86,6 +86,11 @@ packages = [
     "nle.agent",
     "nle.scripts",
     "nle.tests",
+    "nle.language_wrapper.agents",
+    "nle.language_wrapper.agents.sample_factory",
+    "nle.language_wrapper.scripts",
+    "nle.language_wrapper.tests",
+    "nle.language_wrapper.wrappers",
 ]
 
 entry_points = {
@@ -162,7 +167,7 @@ if __name__ == "__main__":
         ext_modules=[setuptools.Extension("nle", sources=[])],
         cmdclass={"build_ext": CMakeBuild},
         setup_requires=["pybind11>=2.2"],
-        install_requires=["pybind11>=2.2", "numpy>=1.16", "gymnasium==1.0.0"],
+        install_requires=["pybind11>=2.2", "numpy>=1.16", "gym==0.23"],
         extras_require=extras_deps,
         python_requires=">=3.8",
         classifiers=[
