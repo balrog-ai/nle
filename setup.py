@@ -86,6 +86,7 @@ packages = [
     "nle.agent",
     "nle.scripts",
     "nle.tests",
+    "nle.language_wrapper",
     "nle.language_wrapper.agents",
     "nle.language_wrapper.agents.sample_factory",
     "nle.language_wrapper.scripts",
