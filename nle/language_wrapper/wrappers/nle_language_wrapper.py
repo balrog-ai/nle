@@ -232,7 +232,7 @@ class NLELanguageWrapper(Wrapper):
             use_language_action(bool): Use language action or discrete integer actions
         """
         super().__init__(env)
-        assert isinstance(env, NLE), "Only NLE environments are supported"
+        assert isinstance(env.unwrapped, NLE), "Only NLE environments are supported"
         missing_obsv_keys = self.REQUIRED_NLE_OBSV_KEYS.difference(
             env.observation_space.spaces.keys()
         )
