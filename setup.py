@@ -125,7 +125,8 @@ extras_deps["all"] = [item for group in extras_deps.values() for item in group]
 
 
 if __name__ == "__main__":
-    package_name = os.getenv("NLE_PACKAGE_NAME", "nle")
+    package_name = "balrog_nle"
+    # package_name = os.getenv("NLE_PACKAGE_NAME", "nle")
     cwd = os.path.dirname(os.path.abspath(__file__))
     version = open("version.txt", "r").read().strip()
     sha = "Unknown"
@@ -154,14 +155,11 @@ if __name__ == "__main__":
     setuptools.setup(
         name=package_name,
         version=version,
-        description=(
-            "The NetHack Learning Environment (NLE): "
-            "a reinforcement learning environment based on NetHack"
-        ),
+        description=("BALROG version of The NetHack Learning Environment (NLE)"),
         long_description=long_description,
         long_description_content_type="text/markdown",
-        author="The NLE Dev Team",
-        url="https://github.com/heiner/nle",
+        author="The NLE Dev Team and BALROG",
+        url="https://github.com/balrog-ai/nle",
         license="NetHack General Public License",
         entry_points=entry_points,
         packages=packages,
