@@ -1,5 +1,5 @@
 [tool.black]
-name = "balrog-nle" 
+name = "balrog_nle" 
 line-length = 88
 target-version = ['py38']
 include = '\.pyi?$'
