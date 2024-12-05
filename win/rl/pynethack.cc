@@ -788,6 +788,45 @@ PYBIND11_MODULE(_pynethack, m)
             "oc_descr_idx",
             &objclass::oc_descr_idx) /* description when name unknown */
         .def_readonly(
+            "oc_uname",
+            &objclass::oc_uname) /* called by user */
+        .def_property_readonly("oc_name_known",  
+            [](const objclass &o) { return o.oc_name_known != 0; }) /* discovered */
+        .def_property_readonly("oc_merge",  
+            [](const objclass &o) { return o.oc_merge != 0; }) /* merge otherwise equal objects */
+        .def_property_readonly("oc_uses_known",  
+            [](const objclass &o) { return o.oc_uses_known != 0; }) /* obj->known affects full description;
+                                                                    otherwise, obj->dknown and obj->bknown
+                                                                    tell all, and obj->known should always
+                                                                    be set for proper merging behavior. */
+        .def_property_readonly("oc_pre_discovered",  
+            [](const objclass &o) { return o.oc_pre_discovered != 0; }) /* Already known at start of game;
+                                                                        won't be listed as a discovery. */
+        .def_property_readonly("oc_magic",  
+            [](const objclass &o) { return o.oc_magic != 0; }) /* inherently magical object */
+        .def_property_readonly("oc_charged",  
+            [](const objclass &o) { return o.oc_charged != 0; }) /* may have +n or (n) charges */
+        .def_property_readonly("oc_unique",  
+            [](const objclass &o) { return o.oc_unique != 0; }) /* special one-of-a-kind object */
+        .def_property_readonly("oc_nowish",  
+            [](const objclass &o) { return o.oc_nowish != 0; }) /* cannot wish for this object */
+        .def_property_readonly("oc_bimanual",  
+            [](const objclass &o) { return o.oc_big != 0; }) /* for weapons & tools used as weapons */
+        .def_property_readonly("oc_bulky",  
+            [](const objclass &o) { return o.oc_big != 0; }) /* for armor */
+        .def_property_readonly("oc_tough",  
+            [](const objclass &o) { return o.oc_tough != 0; }) /*  hard gems/rings */
+        .def_property_readonly("oc_dir",  
+            [](const objclass &o) { return o.oc_dir != 0; }) 
+        .def_property_readonly("oc_material",  
+            [](const objclass &o) { return o.oc_material != 0; }) /* one of obj_material_types */
+        .def_readonly(
+            "oc_skill",
+            &objclass::oc_subtyp) /* Skills of weapons, spellbooks, tools, gems */
+        .def_readonly(
+            "oc_armcat",
+            &objclass::oc_subtyp) /* for armor (enum obj_armor_types) */
+        .def_readonly(
             "oc_oprop",
             &objclass::oc_oprop) /* property (invis, &c.) conveyed */
         .def_readonly(
@@ -804,6 +843,13 @@ PYBIND11_MODULE(_pynethack, m)
         .def_readonly("oc_weight",
                       &objclass::oc_weight) /* encumbrance (1 cn = 0.1 lb.) */
         .def_readonly("oc_cost", &objclass::oc_cost) /* base cost in shops */
+        .def_readonly("oc_wsdam", &objclass::oc_wsdam)  /* max small monster damage */
+        .def_readonly("oc_wldam", &objclass::oc_wldam)  /* max large monster damage */
+        .def_readonly("oc_hitbon", &objclass::oc_oc1)  /* weapons: "to hit" bonus */
+        .def_readonly("a_ac", &objclass::oc_oc1)     /* armor class, used in ARM_BONUS in do.c */
+        .def_readonly("a_can", &objclass::oc_oc2)      /* armor: used in mhitu.c */
+        .def_readonly("oc_level", &objclass::oc_oc2)      /* books: spell level */
+        .def_readonly("oc_nutrition", &objclass::oc_nutrition) /* food value */
         /* And much more, see objclass.h. */;
 
     mn.def("OBJ_NAME", [](const objclass &obj) { return OBJ_NAME(obj); });
