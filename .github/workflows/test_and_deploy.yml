@@ -138,7 +138,6 @@ jobs:
         env:
           # Set NLE_RELEASE_BUILD to 1 to build release wheels
           CIBW_ENVIRONMENT: "NLE_RELEASE_BUILD=1"
-          CIBW_CMAKE_ARGS: "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
       - name: Save wheels
         uses: actions/upload-artifact@v4
         with:
