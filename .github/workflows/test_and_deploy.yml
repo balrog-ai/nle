@@ -2,7 +2,7 @@
 name: Test & deploy
 on:
   push:
-    branches: [main]
+    branches: [main, fair_nle]
   pull_request:
   release:
     types: [prereleased, released]
