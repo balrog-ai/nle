@@ -63,7 +63,7 @@ jobs:
           submodules: true
       - name: Generate sdist
         run: |
-          NLE_RELEASE_BUILD=1 python setup.py sdist
+          NLE_RELEASE_BUILD=1 CMAKE_ARGS='-DCMAKE_POLICY_VERSION_MINIMUM=3.5' python setup.py sdist
       - name: Install from sdist
         run: |
           SDISTNAME=$(ls dist/)
@@ -94,7 +94,7 @@ jobs:
           submodules: true
       - name: Generate sdist
         run: |
-          NLE_RELEASE_BUILD=1 python setup.py sdist
+          NLE_RELEASE_BUILD=1 CMAKE_ARGS='-DCMAKE_POLICY_VERSION_MINIMUM=3.5' python setup.py sdist
       - name: Install from sdist
         run: |
           SDISTNAME=$(ls dist/)
@@ -137,7 +137,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.19.2 # The main configuration is in pyproject.toml
         env:
           # Set NLE_RELEASE_BUILD to 1 to build release wheels
-          CIBW_ENVIRONMENT: "NLE_RELEASE_BUILD=1"
+          CIBW_ENVIRONMENT: "NLE_RELEASE_BUILD=1 CMAKE_ARGS='-DCMAKE_POLICY_VERSION_MINIMUM=3.5'"
       - name: Save wheels
         uses: actions/upload-artifact@v4
         with:
