@@ -63,6 +63,7 @@ class NLELanguageObsv {
                         py::array_t<int64_t> blstats,
                         py::array_t<int64_t> tty_cursor);
   py::bytes text_message(py::array_t<uint8_t> tty_chars);
+  std::string lookup_glyph(int glyph);
 
  private:
   std::unordered_map<int64_t, std::string> alignment_map{
@@ -655,6 +656,28 @@ NLELanguageObsv::fullscreen_view(int16_t *glyphs_data, int64_t *blstats_data) {
   return glyph_distance_direction;
 }
 
+std::string NLELanguageObsv::lookup_glyph(int glyph) {
+  if (glyph < 0 || glyph >= MAX_GLYPH) return "";
+
+  // Check the primary map (Monsters, Objects, Special items, interesting terrain)
+  std::string name = fullscreen_view_glyph_map[glyph];
+  if (!name.empty()) {
+    return name;
+  }
+
+  // Fallback: Check for static terrain (walls, floors) that are usually 
+  // filtered out of the 'text_glyphs' output but exist in the raw CMAP.
+  if (glyph >= GLYPH_CMAP_OFF && glyph < GLYPH_EXPLODE_OFF) {
+      int cmap_idx = glyph_to_cmap(glyph);
+      // Ensure we don't go out of bounds of your cmap_lookup array
+      if (cmap_idx >= 0 && cmap_idx < (sizeof(cmap_lookup)/sizeof(cmap_lookup[0]))) {
+          return cmap_lookup[cmap_idx];
+      }
+  }
+
+  return "";
+}
+
 std::list<std::tuple<std::string, std::string, std::string>>
 NLELanguageObsv::visual_view(int16_t *glyphs_data, int64_t *blstats_data) {
   int64_t player_x = blstats_data[0];
@@ -1173,5 +1196,7 @@ PYBIND11_MODULE(nle_language_obsv, m) {
       .def("text_cursor", &nle_language_obsv::NLELanguageObsv::text_cursor,
            "Convert tty_cursor to text description")
       .def("text_message", &nle_language_obsv::NLELanguageObsv::text_message,
-           "Convert tty_chars to text message including menus");
+           "Convert tty_chars to text message including menus")
+      .def("lookup_glyph", &nle_language_obsv::NLELanguageObsv::lookup_glyph, 
+           "Get string description for a single glyph index");
 }
