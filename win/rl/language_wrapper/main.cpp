@@ -3,6 +3,7 @@
 #include <pybind11/cast.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -64,6 +65,97 @@ class NLELanguageObsv {
                         py::array_t<int64_t> tty_cursor);
   py::bytes text_message(py::array_t<uint8_t> tty_chars);
   std::string lookup_glyph(int glyph);
+  std::pair<std::string, std::string> pos_to_str(int x, int y);
+
+  py::bytes text_glyphs_with_mask(py::array_t<int16_t> glyphs,
+                                  py::array_t<int64_t> blstats,
+                                  py::array_t<bool> revelable_mask) {
+    
+    py::buffer_info glyphs_buffer = glyphs.request();
+    py::buffer_info blstats_buffer = blstats.request();
+    py::buffer_info mask_buffer = revelable_mask.request();
+
+    int16_t *glyphs_data = reinterpret_cast<int16_t *>(glyphs_buffer.ptr);
+    int64_t *blstats_data = reinterpret_cast<int64_t *>(blstats_buffer.ptr);
+    bool *mask_data = reinterpret_cast<bool *>(mask_buffer.ptr);
+
+    int64_t player_x = blstats_data[0];
+    int64_t player_y = blstats_data[1];
+
+    std::list<std::tuple<std::string, std::string, std::string>> all_obs;
+
+    all_obs.splice(all_obs.end(), fullscreen_view(glyphs_data, blstats_data));
+    all_obs.splice(all_obs.end(), visual_view(glyphs_data, blstats_data));
+
+    // Iterate over the boolean mask
+    for (int64_t i = 0; i < DUNGEON_WIDTH * DUNGEON_HEIGHT; i++) {
+      if (mask_data[i]) {
+        int64_t glyph_x = i % DUNGEON_WIDTH;
+        int64_t glyph_y = i / DUNGEON_WIDTH;
+
+        // Skip player itself
+        if (glyph_x == player_x && glyph_y == player_y) continue;
+
+        // Lookup Name
+        int16_t glyph = glyphs_data[i];
+        std::string base_name = lookup_glyph(glyph);
+        
+        std::string trimmed_base = trim(base_name);
+        if (trimmed_base.empty()) {
+          base_name = "unexplored area";
+        } else {
+          base_name = trimmed_base;
+        }
+        
+        std::string full_name = base_name + " (reveals new area)";
+
+        // If this specific combined string isn't in our plural map yet, add it now.
+        if (noun_plural_lookup.find(full_name) == noun_plural_lookup.end()) {
+            
+            // Get the plural of the base object ("doorway" -> "doorways")
+            std::string base_plural = noun_plural_lookup[base_name];
+            
+            // If base wasn't found (rare), calculate it manually
+            if (base_plural.empty()) {
+                base_plural = pluralize(base_name);
+            }
+
+            // Register the new plural: "doorways (reveals new area)"
+            noun_plural_lookup[full_name] = base_plural + " (reveals new area)";
+        }
+
+        // Calculate Relative Position Strings
+        int64_t rel_x = glyph_x - player_x;
+        int64_t rel_y = -glyph_y + player_y; // Inverted Y for NLE
+        
+        // Use existing lookup for speed (safe bounds check implied by grid size)
+        int64_t lookup_x = rel_x + DUNGEON_WIDTH;
+        int64_t lookup_y = rel_y + DUNGEON_HEIGHT;
+        
+        // Bounds check before accessing lookup
+        if (lookup_x >= 0 && lookup_x < (int64_t)(DUNGEON_WIDTH * 2) && 
+            lookup_y >= 0 && lookup_y < (int64_t)(DUNGEON_HEIGHT * 2)) {
+            
+            std::string dist = screen_distance_direction_lookup[lookup_x][lookup_y].first;
+            std::string dir = screen_distance_direction_lookup[lookup_x][lookup_y].second;
+
+            all_obs.push_back(std::make_tuple(full_name, dist, dir));
+        }
+      }
+    }
+
+    all_obs = sort_by_distance_direction(all_obs);
+    all_obs = compress_by_glyph(all_obs);
+
+    std::string output = "";
+    uint64_t idx = 0;
+    for (auto it = all_obs.begin(); it != all_obs.end(); it++) {
+      output += std::get<0>(*it) + " " + std::get<1>(*it) + " " + std::get<2>(*it);
+      if (idx + 1 < all_obs.size()) output += "\n";
+      idx++;
+    }
+    return py::bytes(output);
+  }
 
  private:
   std::unordered_map<int64_t, std::string> alignment_map{
@@ -255,7 +347,6 @@ class NLELanguageObsv {
   void build_screen_pos_to_distance_direction(void);
   void build_noun_plural_lookup();
   void build_visual_view_glyph_map();
-  std::pair<std::string, std::string> pos_to_str(int x, int y);
   std::string offset_to_str(int offset);
   int diagonal_distance(int dx, int dy);
   std::list<std::tuple<std::string, std::string, std::string>> fullscreen_view(
@@ -310,6 +401,14 @@ void NLELanguageObsv::build_noun_plural_lookup() {
 }
 
 std::string NLELanguageObsv::pluralize(std::string noun) {
+  std::string suffix = "";
+  // Check for parenthesis suffix (e.g., from Python)
+  size_t paren_pos = noun.find(" (");
+  if (paren_pos != std::string::npos) {
+      suffix = noun.substr(paren_pos);
+      noun = noun.substr(0, paren_pos); // Strip suffix for pluralization
+  }
+
   std::string plural;
   // Mass nouns
   if (noun.size() >= 5 && noun.substr(noun.size() - 5) == "boots")
@@ -364,7 +463,7 @@ std::string NLELanguageObsv::pluralize(std::string noun) {
   } else {
     plural = noun + "s";
   }
-  return plural;
+  return plural + suffix;
 }
 
 std::list<std::tuple<std::string, std::string, std::string>>
@@ -1198,5 +1297,8 @@ PYBIND11_MODULE(nle_language_obsv, m) {
       .def("text_message", &nle_language_obsv::NLELanguageObsv::text_message,
            "Convert tty_chars to text message including menus")
       .def("lookup_glyph", &nle_language_obsv::NLELanguageObsv::lookup_glyph, 
-           "Get string description for a single glyph index");
+           "Get string description for a single glyph index")
+      .def("pos_to_str", &nle_language_obsv::NLELanguageObsv::pos_to_str, 
+           "Get distance/direction string for relative coords")
+      .def("text_glyphs_with_mask", &nle_language_obsv::NLELanguageObsv::text_glyphs_with_mask, "Text glyphs with custom mask injection");
 }
